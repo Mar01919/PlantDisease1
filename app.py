@@ -1,8 +1,27 @@
+import os
+import gdown
+#-----------------------------
 import streamlit as st
 import tensorflow as tf
 import numpy as np
+#-------------------------------
+# Descarga el modelo si no existe localmente
+MODEL_PATH = "trained_plant_disease_model.h5"
+if not os.path.exists(MODEL_PATH):
+    url = "https://drive.google.com/uc?id=1zysJyrskPwY6A_hyaNu-KnD2dqqiwNVa"
+    gdown.download(url, MODEL_PATH, quiet=False)
 
+# Función de predicción
+def model_prediction(test_image):
+    model = tf.keras.models.load_model(MODEL_PATH)
+    image = tf.keras.preprocessing.image.load_img(test_image, target_size=(128,128))
+    input_arr = tf.keras.preprocessing.image.img_to_array(image)
+    input_arr = np.array([input_arr])  # convertir en batch
+    predictions = model.predict(input_arr)
+    return np.argmax(predictions)
 
+#-------------------------------
+'''
 #Tensorflow Model Prediction
 def model_prediction(test_image):
     #model = tf.keras.models.load_model("trained_plant_disease_model.keras")
@@ -12,6 +31,7 @@ def model_prediction(test_image):
     input_arr = np.array([input_arr]) #convert single image to batch
     predictions = model.predict(input_arr)
     return np.argmax(predictions) #return index of max element
+'''
 
 #Sidebar
 st.sidebar.title("Dashboard")
